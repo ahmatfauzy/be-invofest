@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +10,23 @@ datasource db {
 model Admin {
   id       Int    @id @default(autoincrement())
   email    String @unique
-  password String // bcrypt hash
+  password String
+}
+
+model CompetitionRegistration {
+  id              Int             @id @default(autoincrement())
+  createdAt       DateTime        @default(now())
+  competition     CompetitionType
+  participantType ParticipantType
+  degree          Degree
+  email           String
+  fullName        String?
+  teamName        String?
+  school          String
+  leaderName      String?
+  memberCardUrl   String
+  paymentUrl      String
+  igFollowUrl     String
 }
 
 enum CompetitionType {
@@ -30,23 +43,4 @@ enum ParticipantType {
 enum Degree {
   SMA
   MAHASISWA
-}
-
-model CompetitionRegistration {
-  id               Int              @id @default(autoincrement())
-  createdAt        DateTime         @default(now())
-
-  competition      CompetitionType
-  participantType  ParticipantType
-  degree           Degree 
-
-  email            String
-  fullName         String?
-  teamName         String?
-  school           String 
-  leaderName       String? 
-
-  memberCardUrl    String 
-  paymentUrl       String 
-  igFollowUrl      String 
 }
