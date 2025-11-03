@@ -9,3 +9,44 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String // bcrypt hash
+}
+
+enum CompetitionType {
+  POSTER
+  UIUX
+  WEB
+}
+
+enum ParticipantType {
+  INDIVIDU
+  TEAM
+}
+
+enum Degree {
+  SMA
+  MAHASISWA
+}
+
+model CompetitionRegistration {
+  id               Int              @id @default(autoincrement())
+  createdAt        DateTime         @default(now())
+
+  competition      CompetitionType
+  participantType  ParticipantType
+  degree           Degree 
+
+  email            String
+  fullName         String?
+  teamName         String?
+  school           String 
+  leaderName       String? 
+
+  memberCardUrl    String 
+  paymentUrl       String 
+  igFollowUrl      String 
+}
