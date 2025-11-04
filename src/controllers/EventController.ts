@@ -1,27 +1,24 @@
 import { Request, Response } from "express";
 import multer from "multer";
 import { prisma } from "../utils/prisma";
-import { uploadToCloudinary } from "../services/cloudinary";
-import fs from "fs";
+import { uploadBuffer } from "../services/cloudinary";
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 const uploadFields = upload.fields([
   { name: "payment", maxCount: 1 },
   { name: "igFollow", maxCount: 1 },
 ]);
 
-// Seminar 
+/* ~~~~~~~~~~ SEMINAR ~~~~~~~~~~ */
 export const registSeminar = [
   uploadFields,
   async (req: Request, res: Response): Promise<void> => {
     const { email, fullName, category, whatsapp, institution } = req.body;
     const files = req.files as any;
-    const paymentUrl = (await uploadToCloudinary(files.payment[0].path))
+
+    const paymentUrl = (await uploadBuffer(files.payment[0].buffer)).secure_url;
+    const igFollowUrl = (await uploadBuffer(files.igFollow[0].buffer))
       .secure_url;
-    const igFollowUrl = (await uploadToCloudinary(files.igFollow[0].path))
-      .secure_url;
-    files.payment.forEach((f: any) => fs.unlinkSync(f.path));
-    files.igFollow.forEach((f: any) => fs.unlinkSync(f.path));
 
     const data = await prisma.seminarRegistration.create({
       data: {
@@ -38,19 +35,17 @@ export const registSeminar = [
   },
 ];
 
-//  Workshop
+/* ~~~~~~~~~~ WORKSHOP ~~~~~~~~~~ */
 export const registWorkshop = [
   uploadFields,
   async (req: Request, res: Response): Promise<void> => {
     const { email, fullName, workshop, category, whatsapp, institution } =
       req.body;
     const files = req.files as any;
-    const paymentUrl = (await uploadToCloudinary(files.payment[0].path))
+
+    const paymentUrl = (await uploadBuffer(files.payment[0].buffer)).secure_url;
+    const igFollowUrl = (await uploadBuffer(files.igFollow[0].buffer))
       .secure_url;
-    const igFollowUrl = (await uploadToCloudinary(files.igFollow[0].path))
-      .secure_url;
-    files.payment.forEach((f: any) => fs.unlinkSync(f.path));
-    files.igFollow.forEach((f: any) => fs.unlinkSync(f.path));
 
     const data = await prisma.workshopRegistration.create({
       data: {
@@ -68,18 +63,16 @@ export const registWorkshop = [
   },
 ];
 
-// Talkshow
+/* ~~~~~~~~~~ TALKSHOW ~~~~~~~~~~ */
 export const registTalkshow = [
   uploadFields,
   async (req: Request, res: Response): Promise<void> => {
     const { email, fullName, category, whatsapp, institution } = req.body;
     const files = req.files as any;
-    const paymentUrl = (await uploadToCloudinary(files.payment[0].path))
+
+    const paymentUrl = (await uploadBuffer(files.payment[0].buffer)).secure_url;
+    const igFollowUrl = (await uploadBuffer(files.igFollow[0].buffer))
       .secure_url;
-    const igFollowUrl = (await uploadToCloudinary(files.igFollow[0].path))
-      .secure_url;
-    files.payment.forEach((f: any) => fs.unlinkSync(f.path));
-    files.igFollow.forEach((f: any) => fs.unlinkSync(f.path));
 
     const data = await prisma.talkshowRegistration.create({
       data: {

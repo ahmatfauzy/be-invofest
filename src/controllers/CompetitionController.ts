@@ -1,13 +1,10 @@
-// src/controllers/CompetitionController.ts
 import { Request, Response } from "express";
 import multer from "multer";
 import { prisma } from "../utils/prisma";
-import { uploadToCloudinary } from "../services/cloudinary";
-import fs from "fs";
+import { uploadBuffer } from "../services/cloudinary";
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
-// middleware untuk multiple file
 const cpUpload = upload.fields([
   { name: "memberCard", maxCount: 1 },
   { name: "payment", maxCount: 1 },
@@ -33,13 +30,13 @@ export const registComp = [
         [fieldname: string]: Express.Multer.File[];
       };
 
-      // upload ke cloudinary
-      const memberCardUrl = (await uploadToCloudinary(files.memberCard[0].path)).secure_url;
-      const paymentUrl = (await uploadToCloudinary(files.payment[0].path)).secure_url;
-      const igFollowUrl = (await uploadToCloudinary(files.igFollow[0].path)).secure_url;
-
-      // hapus file lokal
-      Object.values(files).flat().forEach((f) => fs.unlinkSync(f.path));
+      /* upload buffer → Cloudinary */
+      const memberCardUrl = (await uploadBuffer(files.memberCard[0].buffer))
+        .secure_url;
+      const paymentUrl = (await uploadBuffer(files.payment[0].buffer))
+        .secure_url;
+      const igFollowUrl = (await uploadBuffer(files.igFollow[0].buffer))
+        .secure_url;
 
       const data = await prisma.competitionRegistration.create({
         data: {
