@@ -1,31 +1,29 @@
-import express from "express";
 import dotenv from "dotenv";
-import login from "./routes/AuthRoutes"
-import regist from "./routes/CompetitionRoutes"
+dotenv.config(); 
+
+import express from "express";
+import cors from "cors";
+import corsMiddleware from "./corsConfig"; 
+
+import login from "./routes/AuthRoutes";
+import regist from "./routes/CompetitionRoutes";
 import adminRoutes from "./routes/AdminRoutes";
 import eventRoutes from "./routes/EventRoutes";
 
-import cors from "cors";
-
-const corsMiddleware = require('./corsConfig');
 const app = express();
-
 app.use(corsMiddleware);
-
-dotenv.config();
-
-const PORT = process.env.PORT;
 app.use(express.json());
 
-app.get("/", (req, res) => {
+const PORT = process.env.PORT;
+
+app.get("/", (_req, res) => {
   res.send({ message: "API is working" });
 });
 
-app.use("/auth", login)
-app.use("/competition", regist)
+app.use("/auth", login);
+app.use("/competition", regist);
 app.use("/admin", adminRoutes);
 app.use("/event", eventRoutes);
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
