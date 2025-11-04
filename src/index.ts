@@ -25,6 +25,4 @@ app.use("/competition", regist);
 app.use("/admin", adminRoutes);
 app.use("/event", eventRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+export default app;
