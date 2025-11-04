@@ -17,3 +17,28 @@ export const listParticipants = async (
   });
   res.json(list);
 };
+
+export const listSeminar = async (_: Request, res: Response): Promise<void> => {
+  const data = await prisma.seminarRegistration.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(data);
+};
+export const listWorkshop = async (
+  _: Request,
+  res: Response
+): Promise<void> => {
+  const data = await prisma.workshopRegistration.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(data);
+};
+export const listTalkshow = async (
+  _: Request,
+  res: Response
+): Promise<void> => {
+  const data = await prisma.talkshowRegistration.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(data);
+};

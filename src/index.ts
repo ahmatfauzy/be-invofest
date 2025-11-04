@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import login from "./routes/AuthRoutes"
 import regist from "./routes/CompetitionRoutes"
 import adminRoutes from "./routes/AdminRoutes";
-
+import eventRoutes from "./routes/EventRoutes";
 
 import cors from "cors";
 
@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/auth", login)
 app.use("/competition", regist)
 app.use("/admin", adminRoutes);
+app.use("/event", eventRoutes);
 
 
 app.listen(PORT, () => {
