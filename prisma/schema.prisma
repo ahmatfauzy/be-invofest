@@ -24,9 +24,18 @@ model CompetitionRegistration {
   teamName        String?
   school          String
   leaderName      String?
+  whatsapp        String
   memberCardUrl   String
   paymentUrl      String
   igFollowUrl     String
+  teamMembers     TeamMember[]
+}
+
+model TeamMember {
+  id                        Int                      @id @default(autoincrement())
+  competitionRegistrationId Int
+  competitionRegistration   CompetitionRegistration  @relation(fields: [competitionRegistrationId], references: [id], onDelete: Cascade)
+  name                      String
 }
 
 enum CompetitionType {
