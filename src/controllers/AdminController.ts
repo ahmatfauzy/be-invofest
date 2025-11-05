@@ -1,5 +1,7 @@
+// controllers/AdminController.ts
 import { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
+import { CompetitionType } from "@prisma/client";
 
 export const listParticipants = async (
   req: Request,
@@ -7,7 +9,8 @@ export const listParticipants = async (
 ): Promise<void> => {
   const { competition, degree, participantType } = req.query;
   const filters: any = {};
-  if (competition) filters.competition = competition;
+  if (competition)
+    filters.competition = competition as CompetitionType; // <-- cast
   if (degree) filters.degree = degree;
   if (participantType) filters.participantType = participantType;
 
@@ -18,12 +21,15 @@ export const listParticipants = async (
   res.json(list);
 };
 
+
 export const listSeminar = async (_: Request, res: Response): Promise<void> => {
   const data = await prisma.seminarRegistration.findMany({
     orderBy: { createdAt: "desc" },
   });
   res.json(data);
 };
+
+
 export const listWorkshop = async (
   _: Request,
   res: Response
@@ -33,6 +39,8 @@ export const listWorkshop = async (
   });
   res.json(data);
 };
+
+
 export const listTalkshow = async (
   _: Request,
   res: Response
@@ -41,4 +49,88 @@ export const listTalkshow = async (
     orderBy: { createdAt: "desc" },
   });
   res.json(data);
+};
+
+
+export const listCompetition = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { competition } = req.params;
+  const competitionEnum = competition as CompetitionType;
+
+  const list = await prisma.competitionRegistration.findMany({
+    where: { competition: competitionEnum },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const individual = list
+    .filter((r) => r.participantType === "INDIVIDU")
+    .map((r) => ({
+      id: r.id,
+      fullName: r.fullName!,
+      leaderEmail: r.email,
+      leaderPhone: "",
+      school: r.school || "-",
+      registrationType: r.participantType,
+      paymentMethod: "Transfer",
+      igFollow: r.igFollowUrl,
+    }));
+
+  const team = list
+    .filter((r) => r.participantType === "TEAM")
+    .map((r) => ({
+      id: r.id,
+      teamName: r.teamName!,
+      leaderName: r.leaderName!,
+      leaderEmail: r.email,
+      leaderPhone: "",
+      school: r.school || "-",
+      registrationType: r.participantType,
+      paymentMethod: "Transfer",
+      igFollow: r.igFollowUrl,
+    }));
+
+  res.json({ individual, team });
+};
+
+
+
+export const getDashboardStats = async (
+  _: Request,
+  res: Response
+): Promise<void> => {
+  const [
+    seminar,
+    talkshow,
+    workshop,
+    poster,
+    uiux,
+    web,
+  ] = await Promise.all([
+    prisma.seminarRegistration.count(),
+    prisma.talkshowRegistration.count(),
+    prisma.workshopRegistration.count(),
+    prisma.competitionRegistration.count({
+      where: { competition: CompetitionType.POSTER }, // <-- cast
+    }),
+    prisma.competitionRegistration.count({
+      where: { competition: CompetitionType.UIUX },
+    }),
+    prisma.competitionRegistration.count({
+      where: { competition: CompetitionType.WEB },
+    }),
+  ]);
+
+  res.json({
+    message: "OK",
+    data: {
+      seminar,
+      talkshow,
+      workshop,
+      poster,
+      uiux,
+      webDesign: web,
+    },
+  });
 };
