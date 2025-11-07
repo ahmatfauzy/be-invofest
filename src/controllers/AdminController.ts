@@ -1,5 +1,5 @@
 // controllers/AdminController.ts
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { CompetitionType } from "@prisma/client";
 
@@ -9,8 +9,7 @@ export const listParticipants = async (
 ): Promise<void> => {
   const { competition, degree, participantType } = req.query;
   const filters: any = {};
-  if (competition)
-    filters.competition = competition as CompetitionType; // <-- cast
+  if (competition) filters.competition = competition as CompetitionType; // <-- cast
   if (degree) filters.degree = degree;
   if (participantType) filters.participantType = participantType;
 
@@ -21,14 +20,12 @@ export const listParticipants = async (
   res.json(list);
 };
 
-
 export const listSeminar = async (_: Request, res: Response): Promise<void> => {
   const data = await prisma.seminarRegistration.findMany({
     orderBy: { createdAt: "desc" },
   });
   res.json(data);
 };
-
 
 export const listWorkshop = async (
   _: Request,
@@ -40,7 +37,6 @@ export const listWorkshop = async (
   res.json(data);
 };
 
-
 export const listTalkshow = async (
   _: Request,
   res: Response
@@ -50,7 +46,6 @@ export const listTalkshow = async (
   });
   res.json(data);
 };
-
 
 export const listCompetition = async (
   req: Request,
@@ -70,10 +65,12 @@ export const listCompetition = async (
       id: r.id,
       fullName: r.fullName!,
       leaderEmail: r.email,
-      leaderPhone: "",
+      leaderPhone: r.whatsapp,
       school: r.school || "-",
       registrationType: r.participantType,
       paymentMethod: "Transfer",
+      memberCard: r.memberCardUrl,
+      paymentUrl: r.paymentUrl,
       igFollow: r.igFollowUrl,
     }));
 
@@ -84,30 +81,23 @@ export const listCompetition = async (
       teamName: r.teamName!,
       leaderName: r.leaderName!,
       leaderEmail: r.email,
-      leaderPhone: "",
+      leaderPhone: r.whatsapp,
       school: r.school || "-",
       registrationType: r.participantType,
       paymentMethod: "Transfer",
+      memberCard: r.memberCardUrl,
+      paymentUrl: r.paymentUrl,
       igFollow: r.igFollowUrl,
     }));
 
   res.json({ individual, team });
 };
 
-
-
 export const getDashboardStats = async (
   _: Request,
   res: Response
 ): Promise<void> => {
-  const [
-    seminar,
-    talkshow,
-    workshop,
-    poster,
-    uiux,
-    web,
-  ] = await Promise.all([
+  const [seminar, talkshow, workshop, poster, uiux, web] = await Promise.all([
     prisma.seminarRegistration.count(),
     prisma.talkshowRegistration.count(),
     prisma.workshopRegistration.count(),
