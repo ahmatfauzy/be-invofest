@@ -97,30 +97,46 @@ export const getDashboardStats = async (
   _: Request,
   res: Response
 ): Promise<void> => {
-  const [seminar, talkshow, workshop, poster, uiux, web] = await Promise.all([
-    prisma.seminarRegistration.count(),
-    prisma.talkshowRegistration.count(),
-    prisma.workshopRegistration.count(),
-    prisma.competitionRegistration.count({
-      where: { competition: CompetitionType.POSTER }, // <-- cast
-    }),
-    prisma.competitionRegistration.count({
-      where: { competition: CompetitionType.UIUX },
-    }),
-    prisma.competitionRegistration.count({
-      where: { competition: CompetitionType.WEB },
-    }),
-  ]);
+  try {
+    const [seminar, talkshow, workshop, poster, uiux, web] = await Promise.all([
+      prisma.seminarRegistration.count(),
+      prisma.talkshowRegistration.count(),
+      prisma.workshopRegistration.count(),
+      prisma.competitionRegistration.count({
+        where: { competition: CompetitionType.POSTER },
+      }),
+      prisma.competitionRegistration.count({
+        where: { competition: CompetitionType.UIUX },
+      }),
+      prisma.competitionRegistration.count({
+        where: { competition: CompetitionType.WEB },
+      }),
+    ]);
 
-  res.json({
-    message: "OK",
-    data: {
-      seminar,
-      talkshow,
-      workshop,
-      poster,
-      uiux,
-      webDesign: web,
-    },
-  });
+    res.json({
+      message: "OK",
+      data: {
+        seminar,
+        talkshow,
+        workshop,
+        poster,
+        uiux,
+        webDesign: web,
+      },
+    });
+  } catch (error: any) {
+    console.error("[v0] Database connection error:", error.message);
+    res.status(503).json({
+      message: "Database connection error",
+      error: error.message,
+      data: {
+        seminar: 0,
+        talkshow: 0,
+        workshop: 0,
+        poster: 0,
+        uiux: 0,
+        webDesign: 0,
+      },
+    });
+  }
 };
