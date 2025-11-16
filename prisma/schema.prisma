@@ -65,6 +65,10 @@ model SeminarRegistration {
   institution   String    // asal instansi
   paymentUrl    String    // cloudinary
   igFollowUrl   String    // cloudinary
+  // Kolom baru
+  idNumber    String?   
+  idCardUrl   String?   
+  verified    Boolean   @default(false) 
 }
 
 model WorkshopRegistration {
@@ -78,6 +82,10 @@ model WorkshopRegistration {
   institution     String
   paymentUrl      String
   igFollowUrl     String
+  // Kolom baru
+  idNumber        String?
+  idCardUrl       String?
+  verified        Boolean        @default(false)
 }
 
 model TalkshowRegistration {
@@ -90,6 +98,10 @@ model TalkshowRegistration {
   institution   String
   paymentUrl    String
   igFollowUrl   String
+  // Kolom baru
+  idNumber        String?
+  idCardUrl       String?
+  verified        Boolean        @default(false)
 }
 
 enum Category {
